@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const dbConnect = () => {
   try {
-    const connection = mongoose.connect("mongodb://localhost:27017/ecomm_backend");
+    const connection = mongoose.connect(process.env.MONGO_URL);
     console.log("DataBase Connected Successfully");
   } catch (error) {
     throw new error(error);
