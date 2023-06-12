@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
 
 var userSchema = new mongoose.Schema({
   firstName: {
@@ -16,8 +17,6 @@ var userSchema = new mongoose.Schema({
   },
   mobile: {
     type: Number,
-    minLength: 10,
-    maxLength: 10,
     required: true,
     unique: true,
   },
@@ -25,6 +24,11 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+});
+
+userSchema.pre("save" , async function(next) {
+const salt = bcrypt.genSaltSync(10);
+this.password = await bcrypt.hash(this.password , salt);
 });
 
 //Export the model
