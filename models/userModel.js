@@ -15,6 +15,11 @@ var userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  role: {
+    type: String,
+    required: true,
+    default: "user",
+  },
   mobile: {
     type: Number,
     required: true,
