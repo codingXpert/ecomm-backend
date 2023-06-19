@@ -28,13 +28,42 @@ const createUser = async (req, res) => {
   }
 };
 
+//logOut
+const logOut = async (req, res) => {
+  try {
+    // Destroy the session
+    req.session.destroy((err) => {
+      if (err) {
+        res.send({ message: err.message });
+      }
+      res.send({ message: "Logged out successfully" });
+    });
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+};
+
 //fetch all users
 const findAll = async (req, res) => {
   const listAll = await User.find({}, "-password"); // ignoring password in return
   res.json(listAll);
 };
 
+//update the user
+const updateUser = async (req, res) => {
+  try {
+    const data = req.body;
+    console.log(data);
+    const user = await User.findByIdAndUpdate(req.user.id, data);
+    await res.send(user);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
+  logOut,
   findAll,
+  updateUser,
 };
