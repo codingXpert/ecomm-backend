@@ -1,15 +1,24 @@
 const { generateToken } = require("../config/jwtToken");
 const User = require("../models/userModel");
-const asyncHandler = require("express-async-handler");
+const genPassword = require("../lib/passwordUtils").genPassword;
+const validPassword = require("../lib/passwordUtils").validPassword;
 
 //user registration
 const createUser = async (req, res) => {
   try {
+    const hashedPassword = await genPassword(req.body.password);
     const email = req.body.email;
-    console.log(email);
     const findUser = await User.findOne({ email });
     if (!findUser) {
-      const newUser = await User.create(req.body);
+      const data = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        role: req.body.role,
+        mobile: req.body.mobile,
+        password: hashedPassword,
+      });
+      const newUser = await User.create(data);
       res.status(201).send(newUser);
     } else {
       res.json({ message: "User already exist!", success: "false" });
@@ -19,29 +28,13 @@ const createUser = async (req, res) => {
   }
 };
 
-// user login
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const findUser = await User.findOne({ email });
-    if (findUser && (await findUser.isPasswordMatched(password))) {
-      res.json({
-        _id: findUser?.id,
-        firstName: findUser?.firstName,
-        lastName: findUser?.lastName,
-        email: findUser?.email,
-        role: findUser?.role,
-        mobile: findUser?.mobile,
-        token: generateToken(findUser?._id),
-      });
-    } else {
-      res.json({ message: "Invalid Credentials" });
-    }
-  } catch (error) {
-    res.json({ message: error.message });
-  }
+//fetch all users
+const findAll = async (req, res) => {
+  const listAll = await User.find({}, "-password"); // ignoring password in return
+  res.json(listAll);
 };
+
 module.exports = {
   createUser,
-  login,
+  findAll,
 };
