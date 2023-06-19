@@ -54,7 +54,7 @@ const updateUser = async (req, res) => {
   try {
     const data = req.body;
     console.log(data);
-    const user = await User.findByIdAndUpdate(req.user.id, data);  // due to serializer,when user login all details of the user will be added into req body.
+    const user = await User.findByIdAndUpdate(req.user.id, data , {new:true});  // due to serializer,when user login all details of the user will be added into req body.
     await res.send(user);
   } catch (error) {
     res.send({ message: error.message });
@@ -66,7 +66,6 @@ const deleteUser = async(req, res) => {
   try {
     const id = req.params;
     const user = await User.findByIdAndDelete( id );
-    // req.session.destroy();
     res.send({message:'User Deleted'});
   } catch (error) {
     res.send({message:error.message});
